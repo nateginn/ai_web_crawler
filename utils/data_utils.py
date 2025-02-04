@@ -11,7 +11,7 @@ def is_complete_venue(venue: dict, required_keys: list) -> bool:
     return all(key in venue for key in required_keys)
 
 
-def save_venues_to_csv(venues: list, filename: str):
+def save_venues_to_csv(venues: list, filename: str = "complete_venues.csv"):
     if not venues:
         print("No venues to save.")
         return

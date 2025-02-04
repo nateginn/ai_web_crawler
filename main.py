@@ -1,12 +1,11 @@
+import argparse
 import asyncio
 
 from crawl4ai import AsyncWebCrawler
 from dotenv import load_dotenv
 
 from config import BASE_URL, CSS_SELECTOR, REQUIRED_KEYS
-from utils.data_utils import (
-    save_venues_to_csv,
-)
+from utils.data_utils import save_venues_to_csv
 from utils.scraper_utils import (
     fetch_and_process_page,
     get_browser_config,
@@ -16,7 +15,7 @@ from utils.scraper_utils import (
 load_dotenv()
 
 
-async def crawl_venues():
+async def crawl_venues(max_pages: int = 1):
     """
     Main function to crawl venue data from the website.
     """
@@ -33,7 +32,7 @@ async def crawl_venues():
     # Start the web crawler context
     # https://docs.crawl4ai.com/api/async-webcrawler/#asyncwebcrawler
     async with AsyncWebCrawler(config=browser_config) as crawler:
-        while True:
+        while page_number <= max_pages:  # Enforce page limit
             # Fetch and process data from the current page
             venues, no_results_found = await fetch_and_process_page(
                 crawler,
@@ -71,13 +70,27 @@ async def crawl_venues():
     # Display usage statistics for the LLM strategy
     llm_strategy.show_usage()
 
+    return all_venues  # Return the collected venues
 
-async def main():
+
+async def main(output_filename: str = "complete_venues.csv", max_pages: int = 1):
     """
     Entry point of the script.
     """
-    await crawl_venues()
+    all_venues = await crawl_venues(max_pages)  # Get the collected venues
+
+    # Save complete venues to CSV
+    save_venues_to_csv(all_venues, filename=output_filename)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-o", "--output", default="complete_venues.csv", help="Output filename"
+    )
+    parser.add_argument(
+        "-p", "--pages", type=int, default=1, help="Maximum number of pages to crawl"
+    )
+    args = parser.parse_args()
+
+    asyncio.run(main(output_filename=args.output, max_pages=args.pages))
