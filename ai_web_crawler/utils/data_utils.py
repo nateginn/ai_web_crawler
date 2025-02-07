@@ -1,6 +1,7 @@
-import csv
+# ./ai_web_crawler/utils/data_utils.py
 
-from models.venue import Venue
+import csv
+from ai_web_crawler.models.venue import Venue
 
 
 def is_duplicate_venue(venue_name: str, seen_names: set) -> bool:

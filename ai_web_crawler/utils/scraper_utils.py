@@ -1,3 +1,5 @@
+# ./ai_web_crawler/utils/scraper_utils.py
+
 import json
 import os
 from typing import List, Set, Tuple
@@ -10,8 +12,8 @@ from crawl4ai import (
     LLMExtractionStrategy,
 )
 
-from models.venue import Venue
-from utils.data_utils import is_complete_venue, is_duplicate_venue
+from ai_web_crawler.models.venue import Venue
+from ai_web_crawler.utils.data_utils import is_complete_venue, is_duplicate_venue
 
 
 def get_browser_config() -> BrowserConfig:
